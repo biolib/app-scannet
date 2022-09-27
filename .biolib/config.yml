@@ -1,0 +1,55 @@
+biolib_version: 2
+modules:
+    main:
+        image: 'local-docker://scannet:latest'
+        command: "python run.py"
+        input_files:
+            - COPY / /ScanNet/
+
+        output_files:
+            - COPY /ScanNet/predictions/ /
+            - COPY /output.html /
+        
+        required_cpu_in_nano_shares: 4000000000
+        required_memory_in_bytes: 16000000000
+
+        large_file_systems:
+            -
+                uri: protein-tools/uniref30:0.0.3
+                target_path: /uniref30/
+
+arguments:
+
+    -
+        key: '--pdb'
+        key_value_separator: ' '
+        default_value: 1utn.pdb
+        description: Add input PDB file
+        required: true
+        type: file
+
+    -
+        key: '--mode'
+        key_value_separator: ' '
+        default_value: interface
+        description: "Prediction mode:"
+        required: false
+        type: dropdown
+        options:
+            "Interface": interface
+            "Epitope": epitope
+            "Intrinsically Disordered Protein": idp
+
+    -
+        key: ''
+        key_value_separator: ' '
+        default_value: --noMSA
+        description: "Generate and use MSA (Recommended for IDPs and Assemblies):"
+        required: false
+        type: toggle
+        options:
+            'on': ''
+            'off': --noMSA
+        
+
+main_output_file: /output.html
